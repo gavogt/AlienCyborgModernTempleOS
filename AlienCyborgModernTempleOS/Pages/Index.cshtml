@@ -13,7 +13,7 @@
                 <span class="badge text-bg-dark border mb-3">Modern TempleOs</span>
 
                 <h1 class="display-6 fw-semibold mb-2">
-                    Alien Cyborg: Modern TempleOS
+                    Alien Cyborg: A Modern TempleOS
                 </h1>
 
                 <p class="lead text-secondary mb-4">
@@ -37,34 +37,34 @@
                         <form method="post" asp-page-handler="Launch" id="launchForm">
                             <div class="btn-group w-100" role="group" aria-label="Browser selection">
                                 <button type="submit"
-                                    class="btn btn-outline-primary btn-lg"
-                                    name="browser"
-                                    value="chrome"
-                                    data-browser="Chrome">
-                                Chrome
+                                        class="btn btn-outline-primary btn-lg"
+                                        name="browser"
+                                        value="chrome"
+                                        data-browser="Chrome">
+                                    Chrome
                                 </button>
 
-                            <button type="submit"
-                                class="btn btn-outline-primary btn-lg"
-                                name="browser"
-                                value="firefox"
-                                data-browser="Firefox">
-                            Firefox
-                            </button>
+                                <button type="submit"
+                                        class="btn btn-outline-primary btn-lg"
+                                        name="browser"
+                                        value="firefox"
+                                        data-browser="Firefox">
+                                    Firefox
+                                </button>
 
-                            <button type="submit"
-                                class="btn btn-outline-primary btn-lg"
-                                name="browser"
-                                value="edge"
+                                <button type="submit"
+                                        class="btn btn-outline-primary btn-lg"
+                                        name="browser"
+                                        value="edge"
                                         data-browser="Edge">
-                                Edge
+                                    Edge
                                 </button>
                             </div>
 
                             <div class="mt-3 d-none" id="launchingState">
                                 <button class="btn btn-primary w-100" type="button" disabled>
-                                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                                Launching...
+                                    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                    Launching...
                                 </button>
                             </div>
                         </form>
@@ -90,3 +90,10 @@
     </div>
 </div>
 
+@section Scripts {
+    <script>
+        document.getElementById('launchForm').addEventListener('submit', function () {
+            document.getElementById('launchingState').classList.remove('d-none');
+        });
+    </script>
+}
