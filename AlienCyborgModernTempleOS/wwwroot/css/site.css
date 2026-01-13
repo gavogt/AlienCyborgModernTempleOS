@@ -1,31 +1,267 @@
+/* =========================================================
+   AlienCyborg Modern TempleOS — Neon Cyan Theme (Bootstrap)
+   Put AFTER bootstrap.css (or as your site.css)
+   ========================================================= */
+
+/* ---- Base sizing (keep your defaults) ---- */
 html {
-  font-size: 14px;
+    font-size: 14px;
 }
 
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+    html {
+        font-size: 16px;
+    }
 }
 
 html {
-  position: relative;
-  min-height: 100%;
+    position: relative;
+    min-height: 100%;
 }
 
 body {
-  margin-bottom: 60px;
+    margin-bottom: 60px;
 }
 
-.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
-  color: var(--bs-secondary-color);
-  text-align: end;
+/* =========================================================
+   Theme Tokens + Bootstrap CSS Variables
+   ========================================================= */
+:root {
+    /* Neon palette */
+    --ac-cyan: #00ffd1;
+    --ac-green: #39ff14;
+    --ac-purple: #8a2be2;
+    /* Base surfaces */
+    --ac-bg: #020806;
+    --ac-bg2: #010403;
+    --ac-surface: rgba(2, 10, 6, .72);
+    --ac-surface2: rgba(6, 18, 12, .62);
+    --ac-border: rgba(0,255,209,.28);
+    --ac-border-soft: rgba(0,255,209,.16);
+    --ac-border-green: rgba(57,255,20,.18);
+    --ac-text: rgba(235,255,245,.92);
+    --ac-muted: rgba(190,230,210,.70);
+    --ac-glow: 0 0 22px rgba(0,255,209,.14);
+    --ac-glow-strong: 0 0 46px rgba(0,255,209,.22);
+    /* Tie into Bootstrap variables (works across v5.x) */
+    --bs-body-bg: var(--ac-bg);
+    --bs-body-color: var(--ac-text);
+    --bs-primary: var(--ac-cyan);
+    --bs-link-color: var(--ac-cyan);
+    --bs-link-hover-color: var(--ac-green);
+    /* Bootstrap 5.3 focus ring variables (safe if older too) */
+    --bs-focus-ring-color: rgba(0,255,209,.35);
+    --bs-focus-ring-width: .25rem;
 }
 
-.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
-  text-align: start;
+/* =========================================================
+   Background (fix “block repeats”)
+   Render ONCE on a fixed layer behind everything
+   ========================================================= */
+html, body {
+    min-height: 100%;
 }
+
+body {
+    background: transparent;
+    color: var(--ac-text);
+}
+
+    body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        background: radial-gradient(900px 520px at 8% 5%, rgba(0,255,209,.18), transparent 55%), radial-gradient(820px 520px at 92% 10%, rgba(57,255,20,.10), transparent 60%), radial-gradient(900px 600px at 50% 112%, rgba(138,43,226,.10), transparent 60%), linear-gradient(180deg, var(--ac-bg), var(--ac-bg2));
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+    }
+
+/* =========================================================
+   Typography polish
+   ========================================================= */
+h1, h2, h3, h4, .fw-semibold {
+    letter-spacing: .01em;
+}
+
+.text-secondary {
+    color: var(--ac-muted) !important;
+}
+
+/* Floating placeholder alignment (keep your behavior) */
+.form-floating > .form-control-plaintext::placeholder,
+.form-floating > .form-control::placeholder {
+    color: var(--bs-secondary-color);
+    text-align: end;
+}
+
+.form-floating > .form-control-plaintext:focus::placeholder,
+.form-floating > .form-control:focus::placeholder {
+    text-align: start;
+}
+
+/* =========================================================
+   Navbar (fix white menu at top)
+   This overrides default template styles like bg-white/navbar-light
+   ========================================================= */
+.navbar {
+    background: rgba(2,10,6,.55) !important;
+    border-bottom: 1px solid var(--ac-border) !important;
+    box-shadow: 0 14px 46px rgba(0,0,0,.55), var(--ac-glow);
+    backdrop-filter: blur(10px);
+}
+
+    /* Brand + links */
+    .navbar .navbar-brand {
+        color: rgba(235,255,245,.92) !important;
+        text-shadow: 0 0 18px rgba(0,255,209,.18);
+    }
+
+    .navbar .nav-link {
+        color: rgba(235,255,245,.86) !important;
+    }
+
+        .navbar .nav-link:hover,
+        .navbar .nav-link:focus {
+            color: var(--ac-cyan) !important;
+            text-shadow: 0 0 14px rgba(0,255,209,.22);
+        }
+
+    /* Toggler border/icon visibility (Bootstrap uses an SVG bg image) */
+    .navbar .navbar-toggler {
+        border-color: rgba(0,255,209,.35) !important;
+        box-shadow: 0 0 0 .15rem rgba(0,255,209,.18);
+    }
+
+    .navbar .navbar-toggler-icon {
+        filter: drop-shadow(0 0 10px rgba(0,255,209,.25));
+    }
+
+    /* Optional: active nav item glow */
+    .navbar .nav-link.active {
+        color: var(--ac-green) !important;
+        text-shadow: 0 0 16px rgba(57,255,20,.20);
+    }
+
+/* =========================================================
+   Hero + Cards (glass + neon edge)
+   ========================================================= */
+.hero-surface {
+    background: radial-gradient(900px 420px at 10% 0%, rgba(0,255,209,.20), transparent 60%), radial-gradient(700px 420px at 95% 20%, rgba(57,255,20,.10), transparent 60%), var(--ac-surface);
+    border: 1px solid var(--ac-border) !important;
+    box-shadow: 0 18px 60px rgba(0,0,0,.75), 0 0 40px rgba(0,255,209,.12);
+    backdrop-filter: blur(10px);
+}
+
+.card {
+    background: var(--ac-surface2);
+    border: 1px solid var(--ac-border-soft);
+    box-shadow: 0 14px 46px rgba(0,0,0,.65);
+    backdrop-filter: blur(10px);
+}
+
+.card-header {
+    background: transparent !important;
+    border-bottom: 1px solid rgba(0,255,209,.18) !important;
+}
+
+/* =========================================================
+   Buttons (neon cyan glow)
+   ========================================================= */
+.btn-outline-primary {
+    --bs-btn-color: var(--ac-cyan);
+    --bs-btn-border-color: rgba(0,255,209,.55);
+    --bs-btn-hover-color: #041106;
+    --bs-btn-hover-bg: var(--ac-cyan);
+    --bs-btn-hover-border-color: var(--ac-cyan);
+    --bs-btn-active-bg: var(--ac-cyan);
+    --bs-btn-active-border-color: var(--ac-cyan);
+    --bs-btn-focus-shadow-rgb: 0,255,209;
+    text-shadow: 0 0 10px rgba(0,255,209,.18);
+}
+
+    .btn-outline-primary:hover {
+        box-shadow: var(--ac-glow-strong);
+    }
+
+.btn-outline-secondary {
+    --bs-btn-color: rgba(235,255,245,.85);
+    --bs-btn-border-color: rgba(235,255,245,.22);
+    --bs-btn-hover-bg: rgba(0,255,209,.12);
+    --bs-btn-hover-border-color: rgba(0,255,209,.55);
+    --bs-btn-hover-color: rgba(235,255,245,.95);
+}
+
+/* Make your “Launching…” spinner button match theme */
+.btn-primary {
+    --bs-btn-bg: rgba(0,255,209,.90);
+    --bs-btn-border-color: rgba(0,255,209,.90);
+    --bs-btn-hover-bg: rgba(0,255,209,1);
+    --bs-btn-hover-border-color: rgba(0,255,209,1);
+    --bs-btn-color: #041106;
+    box-shadow: 0 0 24px rgba(0,255,209,.18);
+}
+
+/* =========================================================
+   Inputs + focus ring (cyan, not blue)
+   ========================================================= */
+.form-control,
+.form-select {
+    background: rgba(2,10,6,.35);
+    border-color: rgba(0,255,209,.22);
+    color: var(--ac-text);
+}
+
+    .form-control:focus,
+    .form-select:focus,
+    .form-check-input:focus,
+    .btn:focus,
+    .btn:active:focus,
+    .btn-link.nav-link:focus {
+        box-shadow: 0 0 0 .15rem rgba(0,255,209,.22), 0 0 0 .35rem rgba(57,255,20,.12);
+        border-color: rgba(0,255,209,.55);
+    }
+
+/* Checkboxes */
+.form-check-input {
+    background-color: rgba(2,10,6,.35);
+    border-color: rgba(0,255,209,.28);
+}
+
+    .form-check-input:checked {
+        background-color: var(--ac-cyan);
+        border-color: var(--ac-cyan);
+    }
+
+/* =========================================================
+   Badges + subtle “label” vibe
+   ========================================================= */
+.badge.text-bg-dark {
+    background: rgba(0,0,0,.35) !important;
+    border: 1px solid rgba(0,255,209,.22) !important;
+    box-shadow: 0 0 18px rgba(0,255,209,.10);
+}
+
+/* =========================================================
+   Button-group seams look cleaner
+   ========================================================= */
+.btn-group > .btn {
+    border-width: 1px;
+}
+
+/* =========================================================
+   Footer (optional polish)
+   ========================================================= */
+footer {
+    border-top: 1px solid rgba(0,255,209,.14);
+    background: rgba(2,10,6,.35);
+    backdrop-filter: blur(10px);
+}
+
+    footer a {
+        color: var(--ac-cyan);
+    }
+
+        footer a:hover {
+            color: var(--ac-green);
+        }
