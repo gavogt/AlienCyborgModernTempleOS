@@ -16,7 +16,7 @@
                 </h1>
 
                 <p class="lead text-secondary mb-4">
-                    An automated multi-agent orchestration system to talk to Aliens
+                    An automated multi-agent orchestration system to look for Aliens in algorithms
                 </p>
 
                 <div class="d-flex flex-wrap gap-2">
@@ -76,24 +76,216 @@
 
     <div class="card shadow-sm" id="activity">
         <div class="card-header bg-transparent">
-            <div class="d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center justify-content-between gap-3 flex-wrap">
                 <div>
-                    <div class="fw-semibold">Activity</div>
-                    <div class="small text-secondary">Snapshot ingestion + agent run log</div>
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="fw-semibold">Activity</div>
+                        <span id="actStateBadge" class="badge bg-secondary">idle</span>
+                    </div>
+                    <div class="small text-secondary">
+                        Job: <span id="actJobId" class="text-secondary">(none)</span>
+                        <span class="mx-2">•</span>
+                        Updated: <span id="actUpdated" class="text-secondary">—</span>
+                    </div>
                 </div>
-                <button class="btn btn-sm btn-outline-secondary" type="button">Refresh</button>
+
+                <div class="d-flex align-items-center gap-2">
+                    <button id="actClearBtn" class="btn btn-sm btn-outline-danger" type="button">Clear</button>
+                    <button id="actRefreshBtn" class="btn btn-sm btn-outline-secondary" type="button">Refresh</button>
+                    <button id="actCopyFinalBtn" class="btn btn-sm btn-outline-primary" type="button" disabled>Copy Final</button>
+                </div>
             </div>
         </div>
-        <div class="card-body text-secondary">
-            No events yet.
+
+        <div class="card-body">
+            <!-- Quick facts -->
+            <ul class="list-group list-group-flush mb-3">
+                <li class="list-group-item bg-transparent d-flex justify-content-between align-items-center">
+                    <span class="text-secondary">HTML snapshots</span>
+                    <span id="actHtmlCount" class="fw-semibold">—</span>
+                </li>
+                <li class="list-group-item bg-transparent d-flex justify-content-between align-items-center">
+                    <span class="text-secondary">State</span>
+                    <span id="actStateText" class="fw-semibold">—</span>
+                </li>
+            </ul>
+
+            <!-- Long outputs (collapsed by default) -->
+            <div class="accordion" id="activityAccordion">
+                <div class="accordion-item bg-transparent border">
+                    <h2 class="accordion-header" id="hFinal">
+                        <button class="accordion-button collapsed bg-transparent" type="button"
+                                data-bs-toggle="collapse" data-bs-target="#cFinal" aria-expanded="false" aria-controls="cFinal">
+                            Final Report
+                        </button>
+                    </h2>
+                    <div id="cFinal" class="accordion-collapse collapse" aria-labelledby="hFinal" data-bs-parent="#activityAccordion">
+                        <div class="accordion-body">
+                            <pre id="actFinal" class="mb-0" style="white-space:pre-wrap; overflow:auto; max-height:360px;">No report yet.</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item bg-transparent border mt-2">
+                    <h2 class="accordion-header" id="hSignal">
+                        <button class="accordion-button collapsed bg-transparent" type="button"
+                                data-bs-toggle="collapse" data-bs-target="#cSignal" aria-expanded="false" aria-controls="cSignal">
+                            Signal JSON
+                        </button>
+                    </h2>
+                    <div id="cSignal" class="accordion-collapse collapse" aria-labelledby="hSignal" data-bs-parent="#activityAccordion">
+                        <div class="accordion-body">
+                            <pre id="actSignal" class="mb-0" style="white-space:pre-wrap; overflow:auto; max-height:360px;">—</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item bg-transparent border mt-2">
+                    <h2 class="accordion-header" id="hInterp">
+                        <button class="accordion-button collapsed bg-transparent" type="button"
+                                data-bs-toggle="collapse" data-bs-target="#cInterp" aria-expanded="false" aria-controls="cInterp">
+                            Interpreter
+                        </button>
+                    </h2>
+                    <div id="cInterp" class="accordion-collapse collapse" aria-labelledby="hInterp" data-bs-parent="#activityAccordion">
+                        <div class="accordion-body">
+                            <pre id="actInterp" class="mb-0" style="white-space:pre-wrap; overflow:auto; max-height:360px;">—</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item bg-transparent border mt-2">
+                    <h2 class="accordion-header" id="hSkeptic">
+                        <button class="accordion-button collapsed bg-transparent" type="button"
+                                data-bs-toggle="collapse" data-bs-target="#cSkeptic" aria-expanded="false" aria-controls="cSkeptic">
+                            Skeptic
+                        </button>
+                    </h2>
+                    <div id="cSkeptic" class="accordion-collapse collapse" aria-labelledby="hSkeptic" data-bs-parent="#activityAccordion">
+                        <div class="accordion-body">
+                            <pre id="actSkeptic" class="mb-0" style="white-space:pre-wrap; overflow:auto; max-height:360px;">—</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="actHint" class="small text-secondary mt-3">
+                Tip: Upload a ZIP to start a job. This panel will auto-refresh.
+            </div>
         </div>
     </div>
-</div>
 
+</div>
 @section Scripts {
     <script>
         document.getElementById('uploadForm').addEventListener('submit', function () {
-            document.getElementById('uploadingState').classList.remove('d-none');
+          document.getElementById('uploadingState').classList.remove('d-none');
         });
+
+        @if (!string.IsNullOrWhiteSpace(Model.LastJobId))
+        {
+              <text>
+              localStorage.setItem("lastJobId", "@Model.LastJobId");
+              </text>
+        }
+    </script>
+
+    <script>
+        function resetActivityUi() {
+          safeText("actJobId", "(none)");
+          safeText("actUpdated", "—");
+          safeText("actHtmlCount", "—");
+          safeText("actStateText", "—");
+          safeText("actFinal", "No report yet.");
+          safeText("actSignal", "—");
+          safeText("actInterp", "—");
+          safeText("actSkeptic", "—");
+          setBadge("idle");
+          document.getElementById("actCopyFinalBtn").disabled = true;
+        }
+
+        document.getElementById("actClearBtn").addEventListener("click", () => {
+          localStorage.removeItem("lastJobId");     
+          resetActivityUi();                        // ✅ wipe the panel
+        });
+
+        function getJobId() {
+          return localStorage.getItem("lastJobId") || "";
+        }
+
+        function setBadge(state) {
+          const badge = document.getElementById("actStateBadge");
+          badge.classList.remove("bg-secondary", "bg-success", "bg-warning", "bg-danger", "bg-info");
+
+          switch ((state || "").toLowerCase()) {
+            case "completed":
+              badge.classList.add("bg-success");
+              badge.textContent = "completed";
+              break;
+            case "running_agents":
+            case "extracted":
+              badge.classList.add("bg-warning");
+              badge.textContent = state;
+              break;
+            case "unknown":
+              badge.classList.add("bg-danger");
+              badge.textContent = "unknown";
+              break;
+            default:
+              badge.classList.add("bg-secondary");
+              badge.textContent = state || "idle";
+              break;
+          }
+        }
+
+        function safeText(elId, text, fallback = "—") {
+          const el = document.getElementById(elId);
+          if (!el) return;
+          el.textContent = (text && String(text).trim().length) ? String(text) : fallback;
+        }
+
+        async function refreshActivity() {
+          const jobId = getJobId();
+          safeText("actJobId", jobId || "(none)");
+          if (!jobId) return;
+
+          try {
+            const r = await fetch(`/?handler=Activity&jobId=${encodeURIComponent(jobId)}`);
+            if (!r.ok) throw new Error(`HTTP ${r.status}`);
+
+            const data = await r.json();
+            const status = data.status || {};
+            const results = data.results || {};
+
+            const state = status.state || "idle";
+            setBadge(state);
+            safeText("actStateText", state);
+            safeText("actUpdated", status.updatedUtc || "—");
+            safeText("actHtmlCount", status.htmlFiles ?? "—");
+
+            // ✅ Your results.json comes from System.Text.Json; property names keep their case by default. :contentReference[oaicite:1]{index=1}
+            safeText("actFinal", results.FinalReportOutput || "No report yet.", "No report yet.");
+            safeText("actSignal", results.SignalOutput || "—");
+            safeText("actInterp", results.InterpretationOutput || "—");
+            safeText("actSkeptic", results.SkepticOutput || "—");
+
+            const finalText = (document.getElementById("actFinal")?.textContent || "").trim();
+            document.getElementById("actCopyFinalBtn").disabled = finalText.length === 0 || finalText === "No report yet.";
+          } catch (e) {
+            console.error("Activity refresh failed:", e);
+            setBadge("unknown");
+            safeText("actStateText", "unknown");
+          }
+        }
+
+        document.getElementById("actRefreshBtn").addEventListener("click", refreshActivity);
+
+        document.getElementById("actCopyFinalBtn").addEventListener("click", async () => {
+          const text = document.getElementById("actFinal").textContent || "";
+          await navigator.clipboard.writeText(text);
+        });
+
+        setInterval(refreshActivity, 2000);
+        refreshActivity();
     </script>
 }

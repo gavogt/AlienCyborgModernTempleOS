@@ -1,3 +1,4 @@
+using AlienCyborgModernTempleOS;
 using Microsoft.AspNetCore.Http.Features;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,6 +9,18 @@ builder.Services.AddRazorPages();
 builder.Services.Configure<FormOptions>(options =>
 {
     options.MultipartBodyLengthLimit = 200_000_000; // 200 MB
+});
+
+builder.Services.AddHttpClient<LmStudioChatClient>(client =>
+{
+    client.BaseAddress = new Uri("http://localhost:1234/v1/");
+});
+
+builder.Services.AddSingleton(sp =>
+{
+    var llm = sp.GetRequiredService<LmStudioChatClient>();
+    var model = builder.Configuration["LmStudio:Model"] ?? "zai-org/glm-4.6v-flash";
+    return new AlienOrchestrator(llm, model);
 });
 
 builder.WebHost.ConfigureKestrel(options =>
