@@ -1,4 +1,6 @@
 # AlienCyborgModernTempleOS 🛸🤖
+[![License: Apache-2.0][apache-badge]][apache-url]
+
 **An automated multi-agent orchestration system to look for alien signals in YouTube recommendation algorithms (pattern analysis).**
 
 This is a local, offline-friendly ASP.NET Core Razor Pages app that:
@@ -158,3 +160,6 @@ Fix options:
 - Built with ASP.NET Core Razor Pages
 - Uses an OpenAI-compatible local server (LM Studio)
 - Optional DOM parsing via AngleSharp
+
+[apache-badge]: https://img.shields.io/badge/License-Apache%202.0-blue
+[apache-url]: LICENSE
