@@ -5,7 +5,6 @@
     Layout = "_Layout";
 }
 
-
 <div class="container py-5">
     <div class="p-4 p-md-5 rounded-4 border shadow-sm hero-surface mb-4">
         <div class="row align-items-center g-4">
@@ -26,45 +25,46 @@
                 </div>
             </div>
 
+            @if (!string.IsNullOrWhiteSpace(Model.StatusMessage))
+            {
+                <div class="mt-4 alert alert-dark border">
+                    @Model.StatusMessage
+                </div>
+            }
+
             <div class="col-lg-5">
                 <div class="card border-0 shadow-sm">
                     <div class="card-header bg-transparent border-bottom">
-                        <div class="fw-semibold">Launch a Retrieval Job</div>
-                        <div class="small text-secondary">Select a browser engine</div>
+                        <div class="fw-semibold">Upload a Snapshot ZIP</div>
+                        <div class="small text-secondary">ZIP containing any number of SingleFile .html pages, primarily youtube home recommendation oriented</div>
                     </div>
 
                     <div class="card-body">
-                        <form method="post" asp-page-handler="Launch" id="launchForm">
-                            <div class="btn-group w-100" role="group" aria-label="Browser selection">
-                                <button type="submit"
-                                        class="btn btn-outline-primary btn-lg"
-                                        name="browser"
-                                        value="chrome"
-                                        data-browser="Chrome">
-                                    Chrome
-                                </button>
+                        <form method="post"
+                              asp-page-handler="UploadSnapshots"
+                              enctype="multipart/form-data"
+                              id="uploadForm">
 
-                                <button type="submit"
-                                        class="btn btn-outline-primary btn-lg"
-                                        name="browser"
-                                        value="firefox"
-                                        data-browser="Firefox">
-                                    Firefox
-                                </button>
-
-                                <button type="submit"
-                                        class="btn btn-outline-primary btn-lg"
-                                        name="browser"
-                                        value="edge"
-                                        data-browser="Edge">
-                                    Edge
-                                </button>
+                            <div class="mb-3">
+                                <label class="form-label">ZIP file</label>
+                                <input class="form-control"
+                                       type="file"
+                                       name="SnapshotZip"
+                                       accept=".zip,application/zip"
+                                       required />
+                                <div class="form-text text-secondary">
+                                    Example: yt_home_01.html ... yt_home_20.html zipped together
+                                </div>
                             </div>
 
-                            <div class="mt-3 d-none" id="launchingState">
+                            <button type="submit" class="btn btn-outline-primary btn-lg w-100">
+                                Upload and Analyze
+                            </button>
+
+                            <div class="mt-3 d-none" id="uploadingState">
                                 <button class="btn btn-primary w-100" type="button" disabled>
                                     <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                                    Launching...
+                                    Uploading...
                                 </button>
                             </div>
                         </form>
@@ -79,7 +79,7 @@
             <div class="d-flex align-items-center justify-content-between">
                 <div>
                     <div class="fw-semibold">Activity</div>
-                    <div class="small text-secondary">Automation events</div>
+                    <div class="small text-secondary">Snapshot ingestion + agent run log</div>
                 </div>
                 <button class="btn btn-sm btn-outline-secondary" type="button">Refresh</button>
             </div>
@@ -92,8 +92,8 @@
 
 @section Scripts {
     <script>
-        document.getElementById('launchForm').addEventListener('submit', function () {
-            document.getElementById('launchingState').classList.remove('d-none');
+        document.getElementById('uploadForm').addEventListener('submit', function () {
+            document.getElementById('uploadingState').classList.remove('d-none');
         });
     </script>
 }
